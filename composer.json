@@ -21,8 +21,8 @@
   "minimum-stability": "stable",
   "require": {
     "php": ">=5.4.0",
-    "houdunwang/config": "~1.0",
-    "houdunwang/container": "~1.0"
+    "houdunwang/config": "dev-master",
+    "houdunwang/container": "dev-master"
   },
   "autoload": {
     "files": [],

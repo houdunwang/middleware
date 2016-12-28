@@ -9,13 +9,13 @@
  * '-------------------------------------------------------------------*/
 namespace houdunwang\middleware\build;
 
+use houdunwang\config\Config;
+use houdunwang\container\Container;
+
 class Base {
-	protected $app;
+	protected $run = [ ];
 
-	protected static $run = [ ];
-
-	public function __construct( $app ) {
-		$this->app = $app;
+	public function __construct() {
 	}
 
 	/**
@@ -32,52 +32,46 @@ class Base {
 				switch ( $type ) {
 					case 'only':
 						if ( in_array( ACTION, $data ) ) {
-							self::$run[] = Config::get( 'middleware.controller.' . $name );
+							$this->run[] = Config::get( 'middleware.controller.' . $name );
 						}
 						break;
 					case 'except':
 						if ( ! in_array( ACTION, $data ) ) {
-							self::$run[] = Config::get( 'middleware.controller.' . $name );
+							$this->run[] = Config::get( 'middleware.controller.' . $name );
 						}
 						break;
 				}
 			}
 		} else {
-			self::$run[] = Config::get( 'middleware.controller.' . $name );
+			$this->run[] = Config::get( 'middleware.controller.' . $name );
 		}
 	}
 
 	//执行控制器中间件
 	public function controller() {
-		foreach ( self::$run as $class ) {
-			if ( class_exists( $class ) ) {
-				$obj = $this->app->make( $class );
-				if ( method_exists( $obj, 'run' ) ) {
-					$obj->run();
-				}
-			}
+		foreach ( $this->run as $class ) {
+			Container::callMethod( $class, 'run' );
 		}
 	}
 
 	//执行全局中间件
 	public function globals() {
-		$middleware = array_unique( c( 'middleware.global' ) );
+		$middleware = array_unique( Config::get( 'middleware.global' ) );
 		foreach ( $middleware as $class ) {
-			if ( class_exists( $class ) ) {
-				$obj = $this->app->make( $class );
-				if ( method_exists( $obj, 'run' ) ) {
-					$obj->run();
-				}
-			}
+			Container::callMethod( $class, 'run' );
 		}
 	}
 
-	//执行应用中间件
+	/**
+	 * 执行应用中间件
+	 *
+	 * @param $name
+	 *
+	 * @return mixed
+	 */
 	public function exe( $name ) {
-		$class = c( 'middleware.web.' . $name );
-		$obj   = $this->app->make( $class );
-		if ( method_exists( $obj, 'run' ) ) {
-			$obj->run();
-		}
+		$class = Config::get( 'middleware.web.' . $name );
+
+		return Container::callMethod( $class, 'run' );
 	}
 }

@@ -20,11 +20,13 @@ class MiddlewareProvider extends ServiceProvider {
 		//添加全局中间件
 		$config = array_merge( c( 'middleware.global' ), $this->middleware );
 		c( 'middleware.global', array_unique( $config ) );
+		//执行全局中间件
+		\Middleware::globals();
 	}
 
 	public function register() {
 		$this->app->single( 'Middleware', function ( $app ) {
-			return new Middleware( $app );
+			return Middleware::single( $app );
 		} );
 	}
 

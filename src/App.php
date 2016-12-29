@@ -1,4 +1,4 @@
-<?php namespace houdunwang\middleware;
+<?php namespace hdphp\middleware;
 /**
  * 全局中间件
  * Class App

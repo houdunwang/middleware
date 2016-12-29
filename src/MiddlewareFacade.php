@@ -9,9 +9,9 @@
  * '-------------------------------------------------------------------*/
 namespace houdunwang\middleware;
 
-use hdphp\kernel\ServiceFacade;
+use houdunwang\framework\build\Facade;
 
-class MiddlewareFacade extends ServiceFacade {
+class MiddlewareFacade extends Facade {
 	public static function getFacadeAccessor() {
 		return 'Middleware';
 	}

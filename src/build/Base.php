@@ -14,8 +14,21 @@ use houdunwang\container\Container;
 
 class Base {
 	protected $run = [ ];
+	protected $config;
 
-	public function __construct() {
+	//设置配置项
+	public function config( $config, $value = null ) {
+		if ( is_array( $config ) ) {
+			$this->config = $config;
+
+			return $this;
+		} else if ( is_null( $value ) ) {
+			return Arr::get( $this->config, $config );
+		} else {
+			$this->config = Arr::set( $this->config, $config, $value );
+
+			return $this;
+		}
 	}
 
 	/**
@@ -32,18 +45,18 @@ class Base {
 				switch ( $type ) {
 					case 'only':
 						if ( in_array( ACTION, $data ) ) {
-							$this->run[] = Config::get( 'middleware.controller.' . $name );
+							$this->run[] = $this->config( 'middleware.controller.' . $name );
 						}
 						break;
 					case 'except':
 						if ( ! in_array( ACTION, $data ) ) {
-							$this->run[] = Config::get( 'middleware.controller.' . $name );
+							$this->run[] = $this->config( 'middleware.controller.' . $name );
 						}
 						break;
 				}
 			}
 		} else {
-			$this->run[] = Config::get( 'middleware.controller.' . $name );
+			$this->run[] = $this->config( 'middleware.controller.' . $name );
 		}
 	}
 
@@ -56,7 +69,7 @@ class Base {
 
 	//执行全局中间件
 	public function globals() {
-		$middleware = array_unique( Config::get( 'middleware.global' ) );
+		$middleware = array_unique( $this->config( 'middleware.global' ) );
 		foreach ( $middleware as $class ) {
 			Container::callMethod( $class, 'run' );
 		}
@@ -70,7 +83,7 @@ class Base {
 	 * @return mixed
 	 */
 	public function exe( $name ) {
-		$class = Config::get( 'middleware.web.' . $name );
+		$class = $this->config( 'middleware.web.' . $name );
 
 		return Container::callMethod( $class, 'run' );
 	}

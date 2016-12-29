@@ -9,9 +9,9 @@
  * '-------------------------------------------------------------------*/
 namespace houdunwang\middleware;
 
-use hdphp\kernel\ServiceProvider;
+use houdunwang\framework\build\Provider;
 
-class MiddlewareProvider extends ServiceProvider {
+class MiddlewareProvider extends Provider {
 	//延迟加载
 	public $defer = true;
 	protected $middleware = [ 'hdphp\middleware\App', 'hdphp\middleware\Csrf' ];

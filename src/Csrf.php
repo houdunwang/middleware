@@ -1,4 +1,4 @@
-<?php namespace houdunwang\middleware;
+<?php namespace hdphp\middleware;
 /**
  * 表单令牌验证
  * Class Csrf

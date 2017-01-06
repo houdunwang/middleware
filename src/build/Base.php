@@ -90,7 +90,12 @@ class Base {
 	 */
 	public function exe( $name ) {
 		$class = $this->config( 'web.' . $name );
-		if ( class_exists( $class ) ) {
+		if ( is_array( $class ) ) {
+			//数组配置时
+			foreach ( $class as $c ) {
+				return Container::callMethod( $c, 'run' );
+			}
+		} else {
 			return Container::callMethod( $class, 'run' );
 		}
 	}

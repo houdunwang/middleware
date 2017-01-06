@@ -17,8 +17,10 @@ class Base {
 	protected $config;
 
 	//设置配置项
-	public function config( $config, $value = null ) {
-		if ( is_array( $config ) ) {
+	public function config( $config = null, $value = null ) {
+		if ( is_null( $config ) ) {
+			return $this->config;
+		} else if ( is_array( $config ) ) {
 			$this->config = $config;
 
 			return $this;
@@ -45,33 +47,37 @@ class Base {
 				switch ( $type ) {
 					case 'only':
 						if ( in_array( ACTION, $data ) ) {
-							$this->run[] = $this->config( 'middleware.controller.' . $name );
+							$this->run[] = $this->config( 'controller.' . $name );
 						}
 						break;
 					case 'except':
 						if ( ! in_array( ACTION, $data ) ) {
-							$this->run[] = $this->config( 'middleware.controller.' . $name );
+							$this->run[] = $this->config( 'controller.' . $name );
 						}
 						break;
 				}
 			}
 		} else {
-			$this->run[] = $this->config( 'middleware.controller.' . $name );
+			$this->run[] = $this->config( 'controller.' . $name );
 		}
 	}
 
 	//执行控制器中间件
 	public function controller() {
 		foreach ( $this->run as $class ) {
-			Container::callMethod( $class, 'run' );
+			if ( class_exists( $class ) ) {
+				Container::callMethod( $class, 'run' );
+			}
 		}
 	}
 
 	//执行全局中间件
 	public function globals() {
-		$middleware = array_unique( $this->config( 'middleware.global' ) );
+		$middleware = array_unique( $this->config( 'global' ) );
 		foreach ( $middleware as $class ) {
-			Container::callMethod( $class, 'run' );
+			if ( class_exists( $class ) ) {
+				Container::callMethod( $class, 'run' );
+			}
 		}
 	}
 
@@ -83,8 +89,9 @@ class Base {
 	 * @return mixed
 	 */
 	public function exe( $name ) {
-		$class = $this->config( 'middleware.web.' . $name );
-
-		return Container::callMethod( $class, 'run' );
+		$class = $this->config( 'web.' . $name );
+		if ( class_exists( $class ) ) {
+			return Container::callMethod( $class, 'run' );
+		}
 	}
 }

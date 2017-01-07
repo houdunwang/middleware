@@ -93,7 +93,7 @@ class Base {
 		if ( is_array( $class ) ) {
 			//数组配置时
 			foreach ( $class as $c ) {
-				if ( class_exists( $class ) ) {
+				if ( class_exists( $c ) ) {
 					return Container::callMethod( $c, 'run' );
 				}
 			}

@@ -80,6 +80,7 @@ class Base {
 			}
 		}
 	}
+
 	/**
 	 * 执行系统中间件
 	 *
@@ -101,6 +102,23 @@ class Base {
 				return Container::callMethod( $class, 'run' );
 			}
 		}
+	}
+
+	/**
+	 * 添加中间件
+	 *
+	 * @param $name 中间件
+	 * @param $class 处理类
+	 *
+	 * @return Base
+	 */
+	public function add( $name, $class ) {
+		$class = is_array( $class ) ? $class : [ $class ];
+		$middleware = $this->config( 'web.' . $name ) ?: [ ];
+		foreach ( $class as $c ) {
+			array_push( $middleware, $c );
+		}
+		$this->config( 'web.' . $name, array_unique($middleware ));
 	}
 
 	/**

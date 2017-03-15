@@ -14,24 +14,6 @@ use houdunwang\container\Container;
 
 class Base {
 	protected $run = [ ];
-	protected $config;
-
-	//设置配置项
-	public function config( $config = null, $value = null ) {
-		if ( is_null( $config ) ) {
-			return $this->config;
-		} else if ( is_array( $config ) ) {
-			$this->config = $config;
-
-			return $this;
-		} else if ( is_null( $value ) ) {
-			return Arr::get( $this->config, $config );
-		} else {
-			$this->config = Arr::set( $this->config, $config, $value );
-
-			return $this;
-		}
-	}
 
 	/**
 	 * 添加控制器执行的中间件
@@ -47,18 +29,18 @@ class Base {
 				switch ( $type ) {
 					case 'only':
 						if ( in_array( ACTION, $data ) ) {
-							$this->run[] = $this->config( 'controller.' . $name );
+							$this->run[] = Config::get( 'middleware.controller.' . $name );
 						}
 						break;
 					case 'except':
 						if ( ! in_array( ACTION, $data ) ) {
-							$this->run[] = $this->config( 'controller.' . $name );
+							$this->run[] = Config::get( 'middleware.controller.' . $name );
 						}
 						break;
 				}
 			}
 		} else {
-			$this->run[] = $this->config( 'controller.' . $name );
+			$this->run[] = Config::get( 'middleware.controller.' . $name );
 		}
 	}
 
@@ -73,7 +55,7 @@ class Base {
 
 	//执行全局中间件
 	public function globals() {
-		$middleware = array_unique( $this->config( 'global' ) );
+		$middleware = array_unique( Config::get( 'middleware.global' ) );
 		foreach ( $middleware as $class ) {
 			if ( class_exists( $class ) ) {
 				Container::callMethod( $class, 'run' );
@@ -89,16 +71,16 @@ class Base {
 	 * @return mixed
 	 */
 	public function system( $name ) {
-		$class = $this->config( 'system.' . $name );
+		$class = Config::get( 'middleware.system.' . $name );
 		if ( is_array( $class ) ) {
 			//数组配置时
 			foreach ( $class as $c ) {
-				if ( class_exists( $c ) ) {
+				if ( class_exists( $c ) && method_exists( $c, 'run' ) ) {
 					return Container::callMethod( $c, 'run' );
 				}
 			}
 		} else {
-			if ( class_exists( $class ) ) {
+			if ( class_exists( $class ) && method_exists( $class, 'run' ) ) {
 				return Container::callMethod( $class, 'run' );
 			}
 		}
@@ -113,12 +95,12 @@ class Base {
 	 * @return Base
 	 */
 	public function add( $name, $class ) {
-		$class = is_array( $class ) ? $class : [ $class ];
-		$middleware = $this->config( 'web.' . $name ) ?: [ ];
+		$class      = is_array( $class ) ? $class : [ $class ];
+		$middleware = Config::get( 'middleware.web.' . $name ) ?: [ ];
 		foreach ( $class as $c ) {
 			array_push( $middleware, $c );
 		}
-		$this->config( 'web.' . $name, array_unique($middleware ));
+		Config::set( 'middleware.web.' . $name, array_unique( $middleware ) );
 	}
 
 	/**
@@ -129,16 +111,16 @@ class Base {
 	 * @return mixed
 	 */
 	public function exe( $name ) {
-		$class = $this->config( 'web.' . $name );
+		$class = Config::get( 'middleware.web.' . $name );
 		if ( is_array( $class ) ) {
 			//数组配置时
 			foreach ( $class as $c ) {
-				if ( class_exists( $c ) ) {
+				if ( class_exists( $c ) && method_exists( $c, 'run' ) ) {
 					return Container::callMethod( $c, 'run' );
 				}
 			}
 		} else {
-			if ( class_exists( $class ) ) {
+			if ( class_exists( $class ) && method_exists( $class, 'run' ) ) {
 				return Container::callMethod( $class, 'run' );
 			}
 		}

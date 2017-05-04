@@ -10,8 +10,8 @@
 
 namespace houdunwang\middleware\build;
 
+use houdunwang\arr\Arr;
 use houdunwang\config\Config;
-use houdunwang\container\Container;
 
 class Base
 {

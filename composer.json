@@ -1,7 +1,6 @@
 {
   "name": "houdunwang/middleware",
   "description": "中间件组件",
-  "type": "project",
   "keywords": [
     "houdunwang",
     "hdphp",

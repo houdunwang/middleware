@@ -140,7 +140,8 @@ class Base
     public function web($name)
     {
         $middleware = Config::get('middleware.web.'.$name) ?: [];
-
-        return $this->exe($middleware);
+        if ( ! empty($middleware)) {
+            return $this->exe($middleware);
+        }
     }
 }

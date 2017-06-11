@@ -12,6 +12,7 @@ namespace houdunwang\middleware\build;
 
 use houdunwang\arr\Arr;
 use houdunwang\config\Config;
+use houdunwang\route\Route;
 
 class Base
 {
@@ -64,7 +65,7 @@ class Base
     {
         $middleware = [];
         if ($mod) {
-            $action = strtolower(ACTION);
+            $action = strtolower(Route::getAction());
             foreach ($mod as $type => $data) {
                 $data = Arr::valueCase($data, 0);
                 switch ($type) {

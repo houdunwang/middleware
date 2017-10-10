@@ -26,12 +26,8 @@ class Base
     protected function exe($middleware)
     {
         $middleware = array_unique($middleware);
-        $dispatcher = array_reduce(
-            array_reverse($middleware),
-            $this->callback(),
-            function () {
-            }
-        );
+        $dispatcher = array_reduce(array_reverse($middleware), $this->callback(), function () {
+        });
         $dispatcher();
 
         return true;
@@ -46,7 +42,11 @@ class Base
     {
         return function ($callback, $class) {
             return function () use ($callback, $class) {
-                return call_user_func_array([new $class, 'run'], [$callback]);
+                $content = call_user_func_array([new $class, 'run'], [$callback]);
+                if ($content) {
+                    echo is_object($content) ? $content : Response::make($content);
+                    die;
+                }
             };
         };
     }
@@ -73,21 +73,15 @@ class Base
                         if (in_array($action, $data)) {
                             $middleware = array_merge(
                                 $middleware,
-                                Config::get(
-                                    'middleware.controller.'
-                                    .$name
-                                )
+                                Config::get('middleware.controller.'.$name)
                             );
                         }
                         break;
                     case 'except':
-                        if ( ! in_array($action, $data)) {
+                        if (! in_array($action, $data)) {
                             $middleware = array_merge(
                                 $middleware,
-                                Config::get(
-                                    'middleware.controller.'
-                                    .$name
-                                )
+                                Config::get('middleware.controller.'.$name)
                             );
                         }
                         break;

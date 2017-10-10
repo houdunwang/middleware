@@ -9,14 +9,11 @@
  * '-------------------------------------------------------------------*/
 
 namespace houdunwang\middleware;
-
-use houdunwang\config\Config;
 use houdunwang\framework\build\Provider;
-
 class MiddlewareProvider extends Provider
 {
     //延迟加载
-    public $defer = true;
+    public $defer = false;
 
     public function boot()
     {
@@ -24,11 +21,9 @@ class MiddlewareProvider extends Provider
 
     public function register()
     {
-        $this->app->single(
-            'Middleware',
-            function () {
-                return Middleware::single();
-            }
+        $this->app->single('Middleware', function () {
+            return Middleware::single();
+        }
         );
     }
 }

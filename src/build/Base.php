@@ -16,6 +16,8 @@ use houdunwang\route\Route;
 
 class Base
 {
+    protected $params;
+
     /**
      * 执行中间件
      *
@@ -42,7 +44,7 @@ class Base
     {
         return function ($callback, $class) {
             return function () use ($callback, $class) {
-                $content = call_user_func_array([new $class, 'run'], [$callback]);
+                $content = call_user_func_array([new $class, 'run'], [$callback,$this->params]);
                 if ($content) {
                     echo is_object($content) ? $content : Response::make($content);
                     die;
@@ -78,7 +80,7 @@ class Base
                         }
                         break;
                     case 'except':
-                        if (! in_array($action, $data)) {
+                        if ( ! in_array($action, $data)) {
                             $middleware = array_merge(
                                 $middleware,
                                 Config::get('middleware.controller.'.$name)
@@ -128,14 +130,17 @@ class Base
     /**
      * 执行应用中间件
      *
-     * @param $name
+     * @param string $name   中间件
+     * @param mixed  $params 参数
      *
      * @return bool
      */
-    public function web($name)
+    public function web($name, $params = [])
     {
         $middleware = Config::get('middleware.web.'.$name) ?: [];
         if ( ! empty($middleware)) {
+            $this->params = $params;
+
             return $this->exe($middleware);
         }
     }

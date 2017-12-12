@@ -12,5 +12,5 @@ namespace houdunwang\middleware\build;
 
 interface Middleware
 {
-    public function run($next);
+//    public function run($next);
 }

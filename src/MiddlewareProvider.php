@@ -9,7 +9,9 @@
  * '-------------------------------------------------------------------*/
 
 namespace houdunwang\middleware;
+
 use houdunwang\framework\build\Provider;
+
 class MiddlewareProvider extends Provider
 {
     //延迟加载
@@ -23,7 +25,6 @@ class MiddlewareProvider extends Provider
     {
         $this->app->single('Middleware', function () {
             return Middleware::single();
-        }
-        );
+        });
     }
 }
